@@ -1,0 +1,193 @@
+{% extends "layout.html" %}
+{% block css %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel='stylesheet' type='text/css' href="{{ url_for('static',filename='analysis.css') }}"></link>
+<meta id="pos-data" pos_data="{{posSentPer}}">
+<meta id="neg-data" neg_data="{{negSentPer}}">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+.fa-anchor,.fa-coffee {font-size:200px}
+</style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load("current", {packages:["corechart"]});
+  google.charts.setOnLoadCallback(drawOpinionChart);
+  google.charts.setOnLoadCallback(drawVisibilityChart);
+  function drawOpinionChart() {
+    var oplist = {{ opList|safe }}
+    //var p_data = $('#pos-data').data("posSentPer");
+    //var n_data = $('#neg-data').data("negSentPer");
+    var data = google.visualization.arrayToDataTable([
+      ['Opinion', 'Opinion Percentage'],
+      ['Positive',oplist[0]],
+      ['Negative',oplist[1]]
+    ]);
+
+    var options = {
+      title: 'Opinion Distribution',
+      pieHole: 0.4,
+      backgroundColor: '#F1F1F1',
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('OpinionChart'));
+    chart.draw(data, options);
+  }
+  function drawVisibilityChart() {
+    var vblist = {{ vbList|safe }}
+    var data = google.visualization.arrayToDataTable([
+      ['Opinion', 'Opinion Percentage'],
+      ['Positive',vblist[0]],
+      ['Negative',vblist[1]]
+    ]);
+
+    var options = {
+      title: 'Visibility/Reach Distribution',
+      pieHole: 0.4,
+      backgroundColor: '#F1F1F1',
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('VisibilityChart'));
+    chart.draw(data, options);
+  }
+</script>
+
+{% endblock css %}
+
+{% block content %}
+
+<!-- Navbar -->
+<div class="w3-top">
+        <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+          <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+          <a href="http://127.0.0.1:5000/" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+          <a href="#tg" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Tag Cloud</a>
+          <a href="#oa" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Opinion Analysis</a>
+          <a href="#va" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Visibility Analysis</a>
+          <a href="#tf" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Tweets Fetched</a>
+        </div>
+      
+        <!-- Navbar on small screens -->
+        <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+          <a href="#tg" class="w3-bar-item w3-button w3-padding-large">Tag Cloud</a>
+          <a href="#oa" class="w3-bar-item w3-button w3-padding-large">Opinion Analysis</a>
+          <a href="#tf" class="w3-bar-item w3-button w3-padding-large">Tweets Fetched</a>
+          <a href="#va" class="w3-bar-item w3-button w3-padding-large">Visibility Analysis</a>
+        </div>
+      </div>
+      
+      <!-- Header -->
+      <header class="w3-container w3-red w3-center" style="padding:128px 16px">
+        <h1 class="w3-margin w3-jumbo">Analysis of recent tweets containing "{{key}}"</h1>
+      </header>
+      
+      <!-- First Grid -->
+      <div class="w3-row-padding w3-padding-64 w3-container" id="tg">
+        <div class="w3-content">
+          <div class="w3-twothird">
+            <h1>List Of Most Frequently Used Hashtags:</h1>
+            <h5 class="w3-padding-32">
+                <ul class="list-group">
+                    {% for tag in tag_list %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{tag}}
+                        <span class="badge badge-primary badge-pill">{{tag_count_list[loop.index0]}}</span>
+                      </li>    
+                    {% endfor %}
+                  </ul>
+            </h5>
+      
+            <p class="w3-text-grey"></p>
+          </div>
+          {% set source = '../static/hashtag'+ r|string +'.png' %}
+          <div class="w3-third w3-center">
+            <img src={{source}} alt="Person" class="w3-image" style="width:500px;max-width:500px">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Second Grid -->
+    <div class="w3-row-padding w3-light-grey w3-padding-64 w3-container" id="oa">
+        <div class="w3-content">
+          <div>
+            <h1>Opinion Analysis:</h1>
+            <h4 class="w3-padding-32">The Pie-Chart describes the percentage distribution between the number positive and negative tweets.</h4>
+          </div>
+          {% set source = '../static/hashtag'+ r|string +'.png' %}
+          <div class="w3-center">
+            <div id="OpinionChart" style="height:500px;width:1000px;max-width:1000px;max-height:500px"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!--Third Grid -->
+    <div class="w3-row-padding w3-padding-64 w3-container" id="tf">
+        <div class="w3-content">
+          <div>
+            <h1>Tweets Fetched:</h1>
+            <br>
+          </div>
+          {% set source = '../static/hashtag'+ r|string +'.png' %}
+          <div class="w3-center">
+            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+
+                <table class="table table-bordered table-striped mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col">Username</th>
+                      <th scope="col">Text</th>
+                      <th scope="col">Followers Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for tw_uname in tw_uname %}
+                    <tr>
+                      <td>{{tw_uname}}</td>
+                      <td>{{tw_text[loop.index0]}}</td>
+                      <td>{{tw_text2[loop.index0]}}</td>
+                      <td>{{tw_foll[loop.index0]}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+          </div>
+        </div>
+      </div>
+    
+      
+      <!-- Fourth Grid -->
+      <div class="w3-row-padding w3-light-grey w3-padding-64 w3-container" id="va">
+        <div class="w3-content">
+          <div>
+            <h1>Visibility Analysis:</h1>
+            <h4 class="w3-padding-32">The Pie-Chart describes the direct visibility/reach percentage distribution of positivity and negativity through fetched tweets.</h4>
+          </div>
+          {% set source = '../static/hashtag'+ r|string +'.png' %}
+          <div class="w3-center">
+            <div id="VisibilityChart" style="height:500px;width:1000px;max-width:1000px;max-height:500px"></div>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+      // Used to toggle the menu on small screens when clicking on the menu button
+      function myFunction() {
+        var x = document.getElementById("navDemo");
+        if (x.className.indexOf("w3-show") == -1) {
+          x.className += " w3-show";
+        } else { 
+          x.className = x.className.replace(" w3-show", "");
+        }
+      }
+      </script>
+
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block css %}
+<link rel='stylesheet' type='text/css' href="{{ url_for('static',filename='home.css') }}"></link>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+{% endblock css %}
+
+{% block content %}
+<form action="http://localhost:5000/analysis" method='POST'>
+  <input placeholder="Search..." id="InputText" name="InputText" type="search">
+  <i class="fa fa-search"></i>
+</form>
+{% endblock content %}
